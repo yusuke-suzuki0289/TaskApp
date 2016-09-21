@@ -8,8 +8,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         Task task = new Task();
         task.setTitle("作業");
         task.setContents("プログラムを書いてPUSHする");
-        task.setDate(new Date());
+            task.setDate(new Date());
         task.setId(0);
         mRealm.beginTransaction();
         mRealm.copyToRealmOrUpdate(task);
