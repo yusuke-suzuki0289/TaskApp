@@ -24,21 +24,25 @@ public class TaskAdapter extends BaseAdapter {
         mTaskArrayList = taskArrayList;
     }
 
+    //アイテム（データ）の数を返す
     @Override
     public int getCount() {
         return mTaskArrayList.size();
     }
 
+    //アイテム（データ）を返す
     @Override
     public Object getItem(int position) {
         return mTaskArrayList.get(position);
     }
 
+    //アイテム（データ）のIDを返す
     @Override
     public long getItemId(int position) {
         return mTaskArrayList.get(position).getId();
     }
 
+    //Viewを返す baseadapterの継承
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
