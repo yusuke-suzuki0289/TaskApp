@@ -48,6 +48,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent2 = new Intent(MainActivity.this, SearchActivity.class);
+                startActivity(intent2);
+            }
+        });
+
         // Realmのデータの削除
 //        RealmConfiguration realmConfig = new RealmConfiguration.Builder(this).build();
 //        Realm.deleteRealm(realmConfig);
@@ -137,7 +146,8 @@ public class MainActivity extends AppCompatActivity {
             task.setTitle(mTaskRealmResults.get(i).getTitle());
             task.setContents(mTaskRealmResults.get(i).getContents());
             task.setDate(mTaskRealmResults.get(i).getDate());
-
+            //カテゴリ追加
+            task.setCategory(mTaskRealmResults.get(i).getCategory());
             taskArrayList.add(task);
         }
 
