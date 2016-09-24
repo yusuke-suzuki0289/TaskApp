@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
+import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -47,7 +48,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Realmの設定
+        // Realmのデータの削除
+//        RealmConfiguration realmConfig = new RealmConfiguration.Builder(this).build();
+//        Realm.deleteRealm(realmConfig);
+//        mRealm = Realm.getInstance(realmConfig);
+
         mRealm = Realm.getDefaultInstance();
         mTaskRealmResults = mRealm.where(Task.class).findAll();
         mTaskRealmResults.sort("date", Sort.DESCENDING);

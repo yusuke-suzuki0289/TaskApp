@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +14,11 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
+
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -25,7 +31,7 @@ public class InputActivity extends AppCompatActivity {
 
     private int mYear, mMonth, mDay, mHour, mMinute;
     private Button mDateButton, mTimeButton;
-    private EditText mTitleEdit, mContentEdit;
+    private EditText mTitleEdit, mContentEdit, mCategoryEdit;
     private Task mTask;
     private View.OnClickListener mOnDateClickListener = new View.OnClickListener() {
         @Override
@@ -37,7 +43,7 @@ public class InputActivity extends AppCompatActivity {
                             mYear = year;
                             mMonth = monthOfYear;
                             mDay = dayOfMonth;
-                            String dateString = mYear + "/" + String.format("%02d",(mMonth + 1)) + "/" + String.format("%02d", mDay);
+                            String dateString = mYear + "/" + String.format("%02d", (mMonth + 1)) + "/" + String.format("%02d", mDay);
                             mDateButton.setText(dateString);
                         }
                     }, mYear, mMonth, mDay);
@@ -69,6 +75,11 @@ public class InputActivity extends AppCompatActivity {
             finish();
         }
     };
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,13 +94,17 @@ public class InputActivity extends AppCompatActivity {
         }
 
         // UI部品の設定
-        mDateButton = (Button)findViewById(R.id.date_button);
+        mDateButton = (Button) findViewById(R.id.date_button);
         mDateButton.setOnClickListener(mOnDateClickListener);
-        mTimeButton = (Button)findViewById(R.id.times_button);
+        mTimeButton = (Button) findViewById(R.id.times_button);
         mTimeButton.setOnClickListener(mOnTimeClickListener);
         findViewById(R.id.done_button).setOnClickListener(mOnDoneClickListener);
-        mTitleEdit = (EditText)findViewById(R.id.title_edit_text);
-        mContentEdit = (EditText)findViewById(R.id.content_edit_text);
+        mTitleEdit = (EditText) findViewById(R.id.title_edit_text);
+        mContentEdit = (EditText) findViewById(R.id.content_edit_text);
+
+        //カテゴリの追加
+        mCategoryEdit = (EditText) findViewById(R.id.category_edit_text);
+
 
         Intent intent = getIntent();
         mTask = (Task) intent.getSerializableExtra(MainActivity.EXTRA_TASK);
@@ -107,6 +122,9 @@ public class InputActivity extends AppCompatActivity {
             mTitleEdit.setText(mTask.getTitle());
             mContentEdit.setText(mTask.getContents());
 
+            //カテゴリ追加
+            mCategoryEdit.setText(mTask.getCategory());
+
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(mTask.getDate());
             mYear = calendar.get(Calendar.YEAR);
@@ -115,11 +133,14 @@ public class InputActivity extends AppCompatActivity {
             mHour = calendar.get(Calendar.HOUR_OF_DAY);
             mMinute = calendar.get(Calendar.MINUTE);
 
-            String dateString = mYear + "/" + String.format("%02d",(mMonth + 1)) + "/" + String.format("%02d", mDay);
+            String dateString = mYear + "/" + String.format("%02d", (mMonth + 1)) + "/" + String.format("%02d", mDay);
             String timeString = String.format("%02d", mHour) + ":" + String.format("%02d", mMinute);
             mDateButton.setText(dateString);
             mTimeButton.setText(timeString);
         }
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     private void addTask() {
@@ -140,12 +161,16 @@ public class InputActivity extends AppCompatActivity {
             mTask.setId(identifier);
         }
 
+        //カテゴリ追加
+        String category = mCategoryEdit.getText().toString();
         String title = mTitleEdit.getText().toString();
         String content = mContentEdit.getText().toString();
 
+        //カテゴリ追加
+        mTask.setCategory(category);
         mTask.setTitle(title);
         mTask.setContents(content);
-        GregorianCalendar calendar = new GregorianCalendar(mYear,mMonth,mDay,mHour,mMinute);
+        GregorianCalendar calendar = new GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute);
         Date date = calendar.getTime();
         mTask.setDate(date);
 
@@ -164,7 +189,43 @@ public class InputActivity extends AppCompatActivity {
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
-        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), resultPendingIntent);
+    }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Input Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        client.disconnect();
     }
 }
