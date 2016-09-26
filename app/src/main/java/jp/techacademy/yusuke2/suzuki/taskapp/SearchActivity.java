@@ -11,6 +11,8 @@ import io.realm.RealmResults;
 
 public class SearchActivity extends AppCompatActivity {
 
+    private Realm mRealm2;
+    private RealmResults<Task> mTaskRealmResults2;
     private EditText mCategoryEdit2;
     private View.OnClickListener mOnSearchClickListener = new View.OnClickListener() {
         @Override
@@ -19,6 +21,15 @@ public class SearchActivity extends AppCompatActivity {
             //ここに検索処理を記載する。
             //参考URL：https://realm.io/jp/docs/java/latest/#section-23
 
+            // Build the query looking at all users:
+            mRealm2 = Realm.getDefaultInstance();
+            RealmQuery<Task> query = mRealm2.where(Task.class);
+
+            // Add query conditions:
+            query.equalTo("category", String.valueOf(mCategoryEdit2));
+
+            // Execute the query:
+            RealmResults<Task> mTaskRealmResults2 = query.findAll();
             finish();
         }
     };
