@@ -8,10 +8,22 @@
     android:fitsSystemWindows="true"
     tools:context="jp.techacademy.yusuke2.suzuki.taskapp.MainActivity">
 
-    <ListView
-        android:id="@+id/listView1"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <SearchView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/search_view" />
+
+        <ListView
+            android:id="@+id/listView1"
+            android:layout_below="@+id/search_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
 
 <!--タスク追加ボタン-->
     <android.support.design.widget.FloatingActionButton
@@ -23,17 +35,15 @@
         android:src="@drawable/plus"
         app:backgroundTint="@color/colorPrimary"/>
 
-<!--検索ボタン-->
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab2"
-        android:layout_width="134dp"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        app:srcCompat="@android:drawable/ic_search_category_default"
-        android:layout_gravity="bottom"
-        android:layout_toLeftOf="@+id/fab"
-        android:layout_margin="16dp"
-        app:backgroundTint="@android:color/holo_orange_dark" />
-
-
+    <!--&lt;!&ndash;検索ボタン&ndash;&gt;-->
+    <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/fab2"-->
+        <!--android:layout_width="134dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:clickable="true"-->
+        <!--app:srcCompat="@android:drawable/ic_search_category_default"-->
+        <!--android:layout_gravity="bottom"-->
+        <!--android:layout_toLeftOf="@+id/fab"-->
+        <!--android:layout_margin="16dp"-->
+        <!--app:backgroundTint="@android:color/holo_orange_dark" />-->
 </android.support.design.widget.CoordinatorLayout>

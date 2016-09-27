@@ -4,21 +4,25 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
 import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
-import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
+import io.realm.RealmQuery;
 import io.realm.Sort;
+
+import static android.R.attr.category;
 
 public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_TASK = "jp.techacademy.yusuke2.suzuki.taskapp.TASK";
@@ -34,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView mListView;
     private TaskAdapter mTaskAdapter;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,14 +53,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab2);
-        fab2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent2 = new Intent(MainActivity.this, SearchActivity.class);
-                startActivity(intent2);
-            }
-        });
+//        //インテントは使用しないため、コメントアウト
+//        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+//        fab2.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent2 = new Intent(MainActivity.this, SearchActivity.class);
+//                startActivity(intent2);
+//            }
+//        });
 
         // Realmのデータの削除
 //        RealmConfiguration realmConfig = new RealmConfiguration.Builder(this).build();
@@ -86,7 +92,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // ListViewを長押ししたときの処理
-        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
+
+        {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
@@ -133,9 +141,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         reloadListView();
+
     }
 
-    private void reloadListView() {
+    public void reloadListView() {
 
         ArrayList<Task> taskArrayList = new ArrayList<>();
 
@@ -156,10 +165,30 @@ public class MainActivity extends AppCompatActivity {
         mTaskAdapter.notifyDataSetChanged();
     }
 
+    //@Override
+    public boolean setOnQueryTextChanged(String queryText) {
+        if (TextUtils.isEmpty(queryText)) {
+            mListView.clearTextFilter();
+        } else {
+            RealmQuery<Task> query = mRealm.where(Task.class);
+            // Add query conditions: 値を取得するにはgetTextが必要。
+            query.equalTo("category", String.valueOf(queryText));
+            RealmResults<Task> mTaskRealmResults = query.findAll();
+        }
+        return true;
+    }
+
+    // SearchViewのSubmitButtonを押下した時に呼ばれるイベント
+    //@Override
+    public boolean onSubmitQuery(String queryText) {
+        return false;
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
         mRealm.close();
     }
+
 }
