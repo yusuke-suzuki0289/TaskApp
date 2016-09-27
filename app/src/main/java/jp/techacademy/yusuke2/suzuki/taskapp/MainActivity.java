@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -37,13 +39,15 @@ public class MainActivity extends AppCompatActivity {
     };
     private ListView mListView;
     private TaskAdapter mTaskAdapter;
-
+    private SearchView searchView;
+    private String searchWord;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //タスク追加ボタンの定義
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,6 +148,25 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public boolean setSearchWord(String searchWord) {
+        if (searchWord != null && !searchWord.equals("")) {
+            // searchWordがあることを確認
+            this.searchWord = searchWord;
+            RealmQuery<Task> query = mRealm.where(Task.class);
+            // Add query conditions: 値を取得するにはgetTextが必要。
+            query.equalTo("category", String.valueOf(searchWord));
+            RealmResults<Task> mTaskRealmResults = query.findAll();
+
+        }
+        // 虫眼鏡アイコンを隠す
+        this.searchView.setIconified(false);
+        // SearchViewを隠す
+        this.searchView.onActionViewCollapsed();
+        // Focusを外す
+        this.searchView.clearFocus();
+        return false;
+    }
+
     public void reloadListView() {
 
         ArrayList<Task> taskArrayList = new ArrayList<>();
@@ -165,24 +188,6 @@ public class MainActivity extends AppCompatActivity {
         mTaskAdapter.notifyDataSetChanged();
     }
 
-    //@Override
-    public boolean setOnQueryTextChanged(String queryText) {
-        if (TextUtils.isEmpty(queryText)) {
-            mListView.clearTextFilter();
-        } else {
-            RealmQuery<Task> query = mRealm.where(Task.class);
-            // Add query conditions: 値を取得するにはgetTextが必要。
-            query.equalTo("category", String.valueOf(queryText));
-            RealmResults<Task> mTaskRealmResults = query.findAll();
-        }
-        return true;
-    }
-
-    // SearchViewのSubmitButtonを押下した時に呼ばれるイベント
-    //@Override
-    public boolean onSubmitQuery(String queryText) {
-        return false;
-    }
 
     @Override
     protected void onDestroy() {
