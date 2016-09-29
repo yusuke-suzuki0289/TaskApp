@@ -2,31 +2,30 @@ package jp.techacademy.yusuke2.suzuki.taskapp;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
-import android.text.TextUtils;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import java.util.ArrayList;
-
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.RealmQuery;
 import io.realm.Sort;
 
-import static android.R.attr.category;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TextWatcher {
     public final static String EXTRA_TASK = "jp.techacademy.yusuke2.suzuki.taskapp.TASK";
 
     private Realm mRealm;
@@ -39,13 +38,20 @@ public class MainActivity extends AppCompatActivity {
     };
     private ListView mListView;
     private TaskAdapter mTaskAdapter;
-    private SearchView searchView;
-    private String searchWord;
+
+    // キーボード表示を制御するためのオブジェクト
+    InputMethodManager inputMethodManager;
+    // 背景のレイアウト
+    private CoordinatorLayout mainLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setContentView(R.layout.activity_main);
+        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        mainLayout = (CoordinatorLayout) findViewById(R.id.content_main);
 
         //タスク追加ボタンの定義
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -56,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        //EditText定義
+        EditText edittext = (EditText)findViewById(R.id.editText);
+        edittext.addTextChangedListener(this);
 
 //        //インテントは使用しないため、コメントアウト
 //        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab2);
@@ -72,9 +82,13 @@ public class MainActivity extends AppCompatActivity {
 //        Realm.deleteRealm(realmConfig);
 //        mRealm = Realm.getInstance(realmConfig);
 
+        //mRealmの初期状態を取得
         mRealm = Realm.getDefaultInstance();
+        //Task.classの全件を取得
         mTaskRealmResults = mRealm.where(Task.class).findAll();
+        //Task.classの全件をdataで降順ソート
         mTaskRealmResults.sort("date", Sort.DESCENDING);
+        //Realmに反映された最新の内容を受け取るためにRealmResultsが更新されるたびに呼びだされる
         mRealm.addChangeListener(mRealmListener);
 
         // ListViewの設定
@@ -148,26 +162,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public boolean setSearchWord(String searchWord) {
-        if (searchWord != null && !searchWord.equals("")) {
-            // searchWordがあることを確認
-            this.searchWord = searchWord;
-            RealmQuery<Task> query = mRealm.where(Task.class);
-            // Add query conditions: 値を取得するにはgetTextが必要。
-            query.equalTo("category", String.valueOf(searchWord));
-            RealmResults<Task> mTaskRealmResults = query.findAll();
-
-        }
-        // 虫眼鏡アイコンを隠す
-        this.searchView.setIconified(false);
-        // SearchViewを隠す
-        this.searchView.onActionViewCollapsed();
-        // Focusを外す
-        this.searchView.clearFocus();
-        return false;
-    }
-
-    public void reloadListView() {
+        public void reloadListView() {
 
         ArrayList<Task> taskArrayList = new ArrayList<>();
 
@@ -190,10 +185,59 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
+    public void beforeTextChanged(CharSequence s, int start, int count,int after) {
+        //操作前のEtidTextの状態を取得する
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        //操作中のEtidTextの状態を取得する
+    }
+
+//    @Override
+    public void afterTextChanged(Editable s) {
+        //操作後のEtidTextの状態を取得する
+
+        //nullの場合は全件表示する
+        if ("".equals(String.valueOf(s))) {
+            RealmQuery<Task> query = mRealm.where(Task.class);
+            mTaskRealmResults = query.findAll();
+            reloadListView();
+
+        //絞りこまれた場合カテゴリでRealmを検索する。
+        }else {
+            RealmQuery<Task> query = mRealm.where(Task.class);
+            query.equalTo("category", String.valueOf(s));
+            mTaskRealmResults = query.findAll();
+            reloadListView();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    // 画面タップ時の処理
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+// キーボードを隠す
+        inputMethodManager.hideSoftInputFromWindow(mainLayout.getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS);
+// 背景にフォーカスを移す
+        mainLayout.requestFocus();
+
+        return true;
+
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
 
         mRealm.close();
     }
+
 
 }
