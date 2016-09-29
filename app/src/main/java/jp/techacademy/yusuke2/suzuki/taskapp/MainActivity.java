@@ -39,19 +39,21 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
     private ListView mListView;
     private TaskAdapter mTaskAdapter;
 
-    // キーボード表示を制御するためのオブジェクト
-    InputMethodManager inputMethodManager;
-    // 背景のレイアウト
-    private CoordinatorLayout mainLayout;
+    //背景タップ制御対応（後日質問予定）
+//    // キーボード表示を制御するためのオブジェクト
+//    InputMethodManager inputMethodManager;
+//    // 背景のレイアウト
+//    private CoordinatorLayout mainLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setContentView(R.layout.activity_main);
-        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        mainLayout = (CoordinatorLayout) findViewById(R.id.content_main);
+        //背景タップ制御対応（後日質問予定）
+//        setContentView(R.layout.activity_main);
+//        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//        mainLayout = (CoordinatorLayout) findViewById(R.id.content_main);
 
         //タスク追加ボタンの定義
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -213,24 +215,25 @@ public class MainActivity extends AppCompatActivity implements TextWatcher {
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    // 画面タップ時の処理
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-
-// キーボードを隠す
-        inputMethodManager.hideSoftInputFromWindow(mainLayout.getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
-// 背景にフォーカスを移す
-        mainLayout.requestFocus();
-
-        return true;
-
-    }
+    //背景タップ制御対応（後日質問予定）
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//    }
+//
+//    // 画面タップ時の処理
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//
+//// キーボードを隠す
+//        inputMethodManager.hideSoftInputFromWindow(mainLayout.getWindowToken(),
+//                InputMethodManager.HIDE_NOT_ALWAYS);
+//// 背景にフォーカスを移す
+//        mainLayout.requestFocus();
+//
+//        return true;
+//
+//    }
 
     @Override
     protected void onDestroy() {
